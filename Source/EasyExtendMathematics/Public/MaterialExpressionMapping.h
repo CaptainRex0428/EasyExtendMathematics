@@ -24,6 +24,18 @@ public:
 
 	UPROPERTY()
 	FExpressionInput Scale;
+
+	/** Default location value if not connected */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionMapping, meta = (ShowAsInputPin = "Advanced"))
+	FVector ConstLocation;
+
+	/** Default rotation value if not connected */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionMapping, meta = (ShowAsInputPin = "Advanced"))
+	FVector ConstRotation;
+
+	/** Default scale value if not connected */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionMapping, meta = (ShowAsInputPin = "Advanced"))
+	FVector ConstScale;
 	
 	UMaterialExpressionMapping(const FObjectInitializer& ObjectInitializer);
 
