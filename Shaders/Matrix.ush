@@ -3,60 +3,102 @@
 // 平移矩阵
 float4x4 MTXTranslation(float x, float y, float z)
 {
-	return float4x4(
-		1, 0, 0, x,
-		0, 1, 0, y,
-		0, 0, 1, z,
-		0, 0, 0, 1
-	);
+    return float4x4(
+       1, 0, 0, x,
+       0, 1, 0, y,
+       0, 0, 1, z,
+       0, 0, 0, 1
+    );
 }
 
 // 缩放矩阵
 float4x4 MTXScale(float x, float y, float z)
 {
-	return float4x4(
-		x, 0, 0, 0,
-		0, y, 0, 0,
-		0, 0, z, 0,
-		0, 0, 0, 1
-	);
+    return float4x4(
+       x, 0, 0, 0,
+       0, y, 0, 0,
+       0, 0, z, 0,
+       0, 0, 0, 1
+    );
 }
 
 // 旋转矩阵（绕Z轴）
 float4x4 MTXRotationZ(float angle)
 {
-	float c = cos(angle);
-	float s = sin(angle);
-	return float4x4(
-		c, -s, 0, 0,
-		s,  c, 0, 0,
-		0,  0, 1, 0,
-		0,  0, 0, 1
-	);
+    float c = cos(angle);
+    float s = sin(angle);
+    return float4x4(
+       c, -s, 0, 0,
+       s,  c, 0, 0,
+       0,  0, 1, 0,
+       0,  0, 0, 1
+    );
 }
 
 // 旋转矩阵（绕X轴）
 float4x4 MTXRotationX(float angle)
 {
-	float c = cos(angle);
-	float s = sin(angle);
-	return float4x4(
-		1,  0, 0, 0,
-		0,  c,-s, 0,
-		0,  s, c, 0,
-		0,  0, 0, 1
-	);
+    float c = cos(angle);
+    float s = sin(angle);
+    return float4x4(
+       1,  0, 0, 0,
+       0,  c,-s, 0,
+       0,  s, c, 0,
+       0,  0, 0, 1
+    );
 }
 
 // 旋转矩阵（绕Y轴）
 float4x4 MTXRotationY(float angle)
 {
-	float c = cos(angle);
-	float s = sin(angle);
-	return float4x4(
-		 c,  0, s, 0,
-		 0,  1, 0, 0,
-		-s,  0, c, 0,
-		 0,  0, 0, 1
-	);
+    float c = cos(angle);
+    float s = sin(angle);
+    return float4x4(
+        c,  0, s, 0,
+        0,  1, 0, 0,
+       -s,  0, c, 0,
+        0,  0, 0, 1
+    );
+}
+
+// ============================================
+// 组合旋转矩阵（XYZ欧拉角顺序）
+// ============================================
+// 参数：
+//   x, y, z - 绕X、Y、Z轴的旋转角度（弧度）
+// 返回：组合后的旋转矩阵
+// 旋转顺序：X -> Y -> Z（与Blender的XYZ欧拉角一致）
+float4x4 MTXRotation(float x, float y, float z)
+{
+    float cx = cos(x), sx = sin(x);
+    float cy = cos(y), sy = sin(y);
+    float cz = cos(z), sz = sin(z);
+    
+    // XYZ欧拉角组合旋转矩阵
+    // 等价于：MTXRotationZ(z) * MTXRotationY(y) * MTXRotationX(x)
+    return float4x4(
+        cy * cz,                    -cy * sz,                   sy,         0,
+        sx * sy * cz + cx * sz,     -sx * sy * sz + cx * cz,    -sx * cy,   0,
+        -cx * sy * cz + sx * sz,    cx * sy * sz + sx * cz,     cx * cy,    0,
+        0,                          0,                          0,          1
+    );
+}
+
+// ============================================
+// 完整的Mapping变换矩阵（对应Blender的Mapping节点）
+// ============================================
+// 参数：
+//   location - 平移向量 (x, y, z)
+//   rotation - 旋转角度 (x, y, z) 弧度
+//   scale - 缩放向量 (x, y, z)
+// 返回：完整的变换矩阵
+// 变换顺序：Scale -> Rotation -> Translation
+float4x4 MTXMapping(float3 location, float3 rotation, float3 scale)
+{
+    float4x4 S = MTXScale(scale.x, scale.y, scale.z);
+    float4x4 R = MTXRotation(rotation.x, rotation.y, rotation.z);
+    float4x4 T = MTXTranslation(location.x, location.y, location.z);
+    
+    // 变换顺序：T * R * S
+    return mul(T, mul(R, S));
 }
