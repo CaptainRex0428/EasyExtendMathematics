@@ -1,0 +1,4 @@
+[submodule "Source/EasyMath"]
+	path = Source/EasyMath
+	url = https://github.com/CaptainRex0428/EasyMath.git
+	branch = release

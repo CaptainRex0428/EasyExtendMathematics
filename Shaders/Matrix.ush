@@ -1,0 +1,62 @@
+#pragma once
+
+// 平移矩阵
+float4x4 MTXTranslation(float x, float y, float z)
+{
+	return float4x4(
+		1, 0, 0, x,
+		0, 1, 0, y,
+		0, 0, 1, z,
+		0, 0, 0, 1
+	);
+}
+
+// 缩放矩阵
+float4x4 MTXScale(float x, float y, float z)
+{
+	return float4x4(
+		x, 0, 0, 0,
+		0, y, 0, 0,
+		0, 0, z, 0,
+		0, 0, 0, 1
+	);
+}
+
+// 旋转矩阵（绕Z轴）
+float4x4 MTXRotationZ(float angle)
+{
+	float c = cos(angle);
+	float s = sin(angle);
+	return float4x4(
+		c, -s, 0, 0,
+		s,  c, 0, 0,
+		0,  0, 1, 0,
+		0,  0, 0, 1
+	);
+}
+
+// 旋转矩阵（绕X轴）
+float4x4 MTXRotationX(float angle)
+{
+	float c = cos(angle);
+	float s = sin(angle);
+	return float4x4(
+		1,  0, 0, 0,
+		0,  c,-s, 0,
+		0,  s, c, 0,
+		0,  0, 0, 1
+	);
+}
+
+// 旋转矩阵（绕Y轴）
+float4x4 MTXRotationY(float angle)
+{
+	float c = cos(angle);
+	float s = sin(angle);
+	return float4x4(
+		 c,  0, s, 0,
+		 0,  1, 0, 0,
+		-s,  0, c, 0,
+		 0,  0, 0, 1
+	);
+}
