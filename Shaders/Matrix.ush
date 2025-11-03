@@ -95,7 +95,7 @@ float4x4 MTXRotation(float x, float y, float z)
 // 变换顺序：Scale -> Rotation -> Translation
 float4x4 MTXMapping(float3 location, float3 rotation, float3 scale)
 {
-    float4x4 S = MTXScale(scale.x, scale.y, scale.z);
+    float4x4 S = MTXScale(1/scale.x, 1/scale.y, 1/scale.z);
     float4x4 R = MTXRotation(rotation.x, rotation.y, rotation.z);
     float4x4 T = MTXTranslation(location.x, location.y, location.z);
     
