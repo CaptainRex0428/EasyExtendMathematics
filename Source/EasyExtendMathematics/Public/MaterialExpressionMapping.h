@@ -13,28 +13,28 @@ class UMaterialExpressionMapping : public UMaterialExpression
 	GENERATED_BODY()
 
 public:
-	UPROPERTY()
+	UPROPERTY(meta = (RequiredInput = "true", ToolTip = ""))
 	FExpressionInput Vector;
 
-	UPROPERTY()
+	UPROPERTY(meta = (RequiredInput = "false", ToolTip = ""))
 	FExpressionInput Location;
 
-	UPROPERTY()
+	UPROPERTY(meta = (RequiredInput = "false", ToolTip = ""))
 	FExpressionInput Rotation;
 
-	UPROPERTY()
+	UPROPERTY(meta = (RequiredInput = "false", ToolTip = ""))
 	FExpressionInput Scale;
 
 	/** Default location value if not connected */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionMapping, meta = (ShowAsInputPin = "Advanced"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionMapping, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "Location"))
 	FVector ConstLocation;
 
 	/** Default rotation value if not connected */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionMapping, meta = (ShowAsInputPin = "Advanced"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionMapping, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "Rotation"))
 	FVector ConstRotation;
 
 	/** Default scale value if not connected */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionMapping, meta = (ShowAsInputPin = "Advanced"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionMapping, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "Scale"))
 	FVector ConstScale;
 	
 	UMaterialExpressionMapping(const FObjectInitializer& ObjectInitializer);
