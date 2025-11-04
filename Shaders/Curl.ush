@@ -12,9 +12,9 @@
 // 输出：2D向量场
 // SampleOffset 0.0001f
 float2 CurlNoise2D(Texture2D NoiseTexture, SamplerState NoiseSampler, 
-				   float2 UVs, float2 Scale, float2 Offset, float SampleOffset)
+				   float2 UVs, float SampleOffset)
 {
-	float2 uv = UVs * Scale + Offset;
+	float2 uv = UVs;
 	float h = SampleOffset;
     
 	// 采样中心点和2个相邻点（只使用R通道）
@@ -36,9 +36,9 @@ float2 CurlNoise2D(Texture2D NoiseTexture, SamplerState NoiseSampler,
 // 2D Curl Noise 中心差分法（更精确但需要更多采样）
 // ============================================
 float2 CurlNoise2D_Central(Texture2D NoiseTexture, SamplerState NoiseSampler, 
-						   float2 UVs, float2 Scale, float2 Offset, float SampleOffset)
+						   float2 UVs, float SampleOffset)
 {
-	float2 uv = UVs * Scale + Offset;
+	float2 uv = UVs;
 	float h = SampleOffset;
     
 	// 采样4个方向（中心差分需要正负两边）
@@ -61,9 +61,9 @@ float2 CurlNoise2D_Central(Texture2D NoiseTexture, SamplerState NoiseSampler,
 // 输入：单通道噪声纹理（只用R通道）
 // 输出：3D向量场
 float3 CurlNoise3D(Texture2D NoiseTexture, SamplerState NoiseSampler, 
-				   float2 UVs, float2 Scale, float2 Offset, float SampleOffset)
+				   float2 UVs, float SampleOffset)
 {
-	float2 uv = UVs * Scale + Offset;
+	float2 uv = UVs;
 	float h = SampleOffset;
     
 	// 注意：这里我们在2D纹理上模拟3D noise
@@ -99,9 +99,9 @@ float3 CurlNoise3D(Texture2D NoiseTexture, SamplerState NoiseSampler,
 // ============================================
 // 如果你有3D纹理资源
 float3 CurlNoise3D_Volume(Texture3D NoiseTexture3D, SamplerState NoiseSampler, 
-						float3 Position, float3 Scale, float3 Offset, float SampleOffset)
+						float3 Position, float SampleOffset)
 {
-	float3 pos = Position * Scale + Offset;
+	float3 pos = Position;
 	float h = SampleOffset;
     
 	// 采样中心点
@@ -131,9 +131,9 @@ float3 CurlNoise3D_Volume(Texture3D NoiseTexture3D, SamplerState NoiseSampler,
 // ============================================
 // 如果你的噪声纹理RGB通道是三个独立的噪声
 float3 CurlNoise3D_MultiChannel(Texture2D NoiseTexture, SamplerState NoiseSampler, 
-							  float2 UVs, float2 Scale, float2 Offset, float SampleOffset)
+							  float2 UVs, float SampleOffset)
 {
-	float2 uv = UVs * Scale + Offset;
+	float2 uv = UVs;
 	float h = SampleOffset;
     
 	// 分别计算三个通道的curl（每个通道独立计算）
@@ -176,9 +176,9 @@ float3 CurlNoise3D_Combine(Texture2D NoiseTexture, SamplerState NoiseSampler,
 {
 	float pos = Position * PositionScale;
 	
-	float2 CurlX = CurlNoise2D_Central(NoiseTexture, NoiseSampler, pos.gb, ScaleX, OffsetX, SampleOffset);
-	float2 CurlY = CurlNoise2D_Central(NoiseTexture, NoiseSampler, pos.rb, ScaleY, OffsetY, SampleOffset);
-	float2 CurlZ = CurlNoise2D_Central(NoiseTexture, NoiseSampler, pos.rg, ScaleZ, OffsetZ, SampleOffset);
+	float2 CurlX = CurlNoise2D_Central(NoiseTexture, NoiseSampler, pos.gb * ScaleX + OffsetX, SampleOffset);
+	float2 CurlY = CurlNoise2D_Central(NoiseTexture, NoiseSampler, pos.rb * ScaleY + OffsetY, SampleOffset);
+	float2 CurlZ = CurlNoise2D_Central(NoiseTexture, NoiseSampler, pos.rg * ScaleZ + OffsetZ, SampleOffset);
 
 	float3 curl3D;
 	curl3D.x = CurlX.x * 0.7 + CurlZ.y * 0.3;

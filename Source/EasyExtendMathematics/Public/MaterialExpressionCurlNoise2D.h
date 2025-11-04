@@ -21,12 +21,6 @@ public:
 	
 	UPROPERTY(meta =(RequiredInput = "false", ToolTip = "Defaults to 'PerlinNoise' if not specified"))
 	FExpressionInput TextureObject;
-	
-	UPROPERTY(meta =(RequiredInput = "false", ToolTip = ""))
-	FExpressionInput Scale;
-
-	UPROPERTY(meta =(RequiredInput = "false", ToolTip = ""))
-	FExpressionInput Offset;
 
 	UPROPERTY(meta =(RequiredInput = "false", ToolTip = ""))
 	FExpressionInput SampleOffset;
@@ -34,17 +28,11 @@ public:
 	/** Default scale value if not connected */
 	UPROPERTY(EditAnywhere, Category = MaterialExpressionTextureSample, meta = (OverridingInputProperty = "Coordinate"))
 	uint8 ConstCoordinate;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionCurlNoise, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "Scale"))
-	FVector2D DefaultScale;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionCurlNoise, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "Offset"))
-	FVector2D DefaultOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionCurlNoise, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "SampleOffset"))
 	float DefaultSampleOffset;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionCurlNoise, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "TextureObject"))
+	UPROPERTY()
 	TObjectPtr<UTexture2D> DefaultNoiseTexture;
 	
 	UMaterialExpressionCurlNoise2D(const FObjectInitializer& ObjectInitializer);
