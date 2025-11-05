@@ -107,7 +107,7 @@ float3 CurlNoise3D_Volume(Texture3D NoiseTexture3D, SamplerState NoiseSampler,
 	// 采样中心点
 	float n = Texture3DSample(NoiseTexture3D, NoiseSampler, pos).r;
     
-	// 采样六个方向（后向差分）
+	// 采样3个方向（后向差分）
 	float n_x = Texture3DSample(NoiseTexture3D, NoiseSampler, pos - float3(h, 0, 0)).r;
 	float n_y = Texture3DSample(NoiseTexture3D, NoiseSampler, pos - float3(0, h, 0)).r;
 	float n_z = Texture3DSample(NoiseTexture3D, NoiseSampler, pos - float3(0, 0, h)).r;
@@ -143,6 +143,7 @@ float3 CurlNoise3D_MultiChannel(Texture2D NoiseTexture, SamplerState NoiseSample
 	float r = Texture2DSample(NoiseTexture, NoiseSampler, uv).r;
 	float r_left = Texture2DSample(NoiseTexture, NoiseSampler, uv - float2(h, 0)).r;
 	float r_down = Texture2DSample(NoiseTexture, NoiseSampler, uv - float2(0, h)).r;
+	
 	float dR_dx = (r - r_left) / h;
 	float dR_dy = (r - r_down) / h;
 	curl.x = dR_dy;
@@ -169,12 +170,35 @@ float3 GetCamWP(FMaterialPixelParameters Parameters)
 // ============================================
 // 如果你的噪声纹理RGB通道是三个独立的噪声
 float3 CurlNoise3D_Combine(Texture2D NoiseTexture, SamplerState NoiseSampler,
-	float3 Position, float PositionScale,
+	float3 Position,
 	float2 ScaleX, float2 OffsetX,
 	float2 ScaleY, float2 OffsetY,
 	float2 ScaleZ, float2 OffsetZ, float SampleOffset)
 {
-	float pos = Position * PositionScale;
+	float3 pos = Position;
+	
+	float2 CurlX = CurlNoise2D(NoiseTexture, NoiseSampler, pos.gb * ScaleX + OffsetX, SampleOffset);
+	float2 CurlY = CurlNoise2D(NoiseTexture, NoiseSampler, pos.rb * ScaleY + OffsetY, SampleOffset);
+	float2 CurlZ = CurlNoise2D(NoiseTexture, NoiseSampler, pos.rg * ScaleZ + OffsetZ, SampleOffset);
+
+	float3 curl3D;
+	curl3D.x = CurlX.x * 0.7 + CurlZ.y * 0.3;
+	curl3D.y = CurlY.x * 0.7 + CurlX.y * 0.3;
+	curl3D.z = CurlZ.x * 0.7 + CurlY.y * 0.3;
+
+	return curl3D;
+}
+
+// 3D Curl 使用Curl2D Central分别计算三个独立的通道结果
+// ============================================
+// 如果你的噪声纹理RGB通道是三个独立的噪声
+float3 CurlNoise3D_Combine_Central(Texture2D NoiseTexture, SamplerState NoiseSampler,
+	float3 Position,
+	float2 ScaleX, float2 OffsetX,
+	float2 ScaleY, float2 OffsetY,
+	float2 ScaleZ, float2 OffsetZ, float SampleOffset)
+{
+	float3 pos = Position;
 	
 	float2 CurlX = CurlNoise2D_Central(NoiseTexture, NoiseSampler, pos.gb * ScaleX + OffsetX, SampleOffset);
 	float2 CurlY = CurlNoise2D_Central(NoiseTexture, NoiseSampler, pos.rb * ScaleY + OffsetY, SampleOffset);

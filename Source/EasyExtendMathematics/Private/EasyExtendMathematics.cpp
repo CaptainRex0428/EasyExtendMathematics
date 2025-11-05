@@ -27,6 +27,21 @@ void FEasyExtendMathematicsModule::StartupModule()
 	{
 		EEMLogOnly("Failed to load Perlin Noise texture");
 	}
+
+	PerlinNoiseVolumeTexture = LoadObject<UVolumeTexture>(nullptr,
+		TEXT("/EasyExtendMathematics/Texture/VT_PerlinNoise_Origin.VT_PerlinNoise_Origin"));
+	
+	if (PerlinNoiseVolumeTexture)
+	{
+		// 添加到根集合，防止被GC
+		PerlinNoiseVolumeTexture->AddToRoot();
+		
+		EEMLogOnly("Successfully loaded Perlin Noise volume texture");
+	}
+	else
+	{
+		EEMLogOnly("Failed to load Perlin Noise volume texture");
+	}
 }
 
 
@@ -39,6 +54,12 @@ void FEasyExtendMathematicsModule::ShutdownModule()
 	{
 		PerlinNoiseTexture2D->RemoveFromRoot();
 		PerlinNoiseTexture2D = nullptr;
+	}
+
+	if (PerlinNoiseVolumeTexture)
+	{
+		PerlinNoiseVolumeTexture->RemoveFromRoot();
+		PerlinNoiseVolumeTexture = nullptr;
 	}
 	
 	ResetAllShaderSourceDirectoryMappings();

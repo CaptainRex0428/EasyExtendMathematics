@@ -29,8 +29,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = MaterialExpressionTextureSample, meta = (OverridingInputProperty = "Coordinate"))
 	uint8 ConstCoordinate;
 
+	UPROPERTY(EditAnywhere, Category = MaterialExpressionTextureSample, meta = (ShowAsInputPin = "Advanced"))
+	FVector2D Scale;
+
+	UPROPERTY(EditAnywhere, Category = MaterialExpressionTextureSample, meta = (ShowAsInputPin = "Advanced"))
+	FVector2D Offset;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionCurlNoise, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "SampleOffset"))
 	float DefaultSampleOffset;
+
+	UPROPERTY(EditAnywhere, Category = MaterialExpressionTextureSample, meta = (ShowAsInputPin = "Advanced"))
+	bool SymmetrySample;
 
 	UPROPERTY()
 	TObjectPtr<UTexture2D> DefaultNoiseTexture;
@@ -39,6 +48,7 @@ public:
 
 	//~ Begin UMaterialExpression Interface
 #if WITH_EDITOR
+	// 基础编译方法
 	virtual int32 Compile(class FMaterialCompiler* Compiler, int32 OutputIndex) override;
 	
 	virtual void GetCaption(TArray<FString>& OutCaptions) const override;
@@ -46,7 +56,7 @@ public:
 	
 	virtual FText GetKeywords() const override {return FText::FromString(TEXT("CurlNoise2D"));}
 
-	// 重要：提供输入视图，让编辑器知道有哪些输入
+	// 提供输入视图，定义输入
 	virtual FExpressionInput* GetInput(int32 InputIndex) override;
 	virtual FName GetInputName(int32 InputIndex) const override;
 	virtual EMaterialValueType GetInputValueType(int32 InputIndex) override;

@@ -9,15 +9,19 @@
 
 UMaterialExpressionCurlNoise2D::UMaterialExpressionCurlNoise2D(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer),
+	Scale(1.f,1.f),
+	Offset(0.f,0.f),
 	DefaultSampleOffset(0.0001f),
+	SymmetrySample(false),
 	DefaultNoiseTexture(nullptr)
 {
 	// Structure to hold one-time initialization
 	struct FConstructorStatics
 	{
-		FText NAME_Display;
+		// 定义所属分类
+		FText Category_Display;
 		FConstructorStatics()
-			: NAME_Display(LOCTEXT("CurlNoise2D", "CurlNoise2D"))
+			: Category_Display(LOCTEXT("CurlNoise", "CurlNoise"))
 		{
 		}
 	};
@@ -25,7 +29,7 @@ UMaterialExpressionCurlNoise2D::UMaterialExpressionCurlNoise2D(const FObjectInit
 	static FConstructorStatics ConstructorStatics;
 	
 #if WITH_EDITORONLY_DATA
-	MenuCategories.Add(ConstructorStatics.NAME_Display);
+	MenuCategories.Add(ConstructorStatics.Category_Display);
 #endif
 
 	if (FModuleManager::Get().IsModuleLoaded("EasyExtendMathematics"))
@@ -54,10 +58,13 @@ int32 UMaterialExpressionCurlNoise2D::Compile(class FMaterialCompiler* Compiler,
 		return Compiler->Errorf(TEXT("Coordinate compiled error."));
 	}
 
-	// 处理Scale输入（如果没有连接则使用常量）
+	// 处理SampleOffset输入（如果没有连接则使用常量）
 	int32 SampleOffsetInput = SampleOffset.GetTracedInput().Expression ? 
 		SampleOffset.Compile(Compiler) : 
 		Compiler->Constant(DefaultSampleOffset);
+
+	// 处理UVs输入的位移和缩放
+	int32 CoordIdx = Compiler->Add(Compiler->Mul(CoordinateIdx,Compiler->Constant2(Scale.X,Scale.Y)),Compiler->Constant2(Offset.X,Offset.Y));
 	
 	UMaterialExpressionCustom* MaterialExpressionCustom = NewObject<UMaterialExpressionCustom>();
 	
@@ -69,11 +76,21 @@ int32 UMaterialExpressionCurlNoise2D::Compile(class FMaterialCompiler* Compiler,
 	
 	MaterialExpressionCustom->IncludeFilePaths.Add("/EEShaders/Curl.ush");
 
-	MaterialExpressionCustom->Code = TEXT(R"(
+	if (SymmetrySample)
+	{
+		MaterialExpressionCustom->Code = TEXT(R"(
+		return CurlNoise2D_Central(Texture, TextureSampler, Coordinate, SampleOffset);
+		)");
+	}
+	else
+	{
+		MaterialExpressionCustom->Code = TEXT(R"(
 		return CurlNoise2D(Texture, TextureSampler, Coordinate, SampleOffset);
 		)");
+	}
 	
-	TArray<int32> Inputs{ TextureCodeIndex, CoordinateIdx, SampleOffsetInput };
+	
+	TArray<int32> Inputs{ TextureCodeIndex, CoordIdx, SampleOffsetInput };
 	
 	return Compiler->CustomExpression(MaterialExpressionCustom, OutputIndex, Inputs);
 }
