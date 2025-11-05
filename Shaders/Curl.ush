@@ -95,6 +95,46 @@ float3 CurlNoise3D(Texture2D NoiseTexture, SamplerState NoiseSampler,
 	return curl;
 }
 
+// 3D Curl Noise（用于3D粒子效果）
+// ============================================
+// 输入：单通道噪声纹理（只用R通道）
+// 输出：3D向量场
+float3 CurlNoise3D_Central(Texture2D NoiseTexture, SamplerState NoiseSampler, 
+				   float2 UVs, float SampleOffset)
+{
+	float2 uv = UVs;
+	float h = SampleOffset;
+    
+	// 注意：这里我们在2D纹理上模拟3D noise
+	// 可以通过不同的UV偏移来模拟z方向
+	
+    
+	// 采样6个方向的点（使用后向差分）
+	float n_x_R = Texture2DSample(NoiseTexture, NoiseSampler, uv + float2(h, 0)).r;     // x-h
+	float n_x_L = Texture2DSample(NoiseTexture, NoiseSampler, uv - float2(h, 0)).r;     // x-h
+	float n_y_U = Texture2DSample(NoiseTexture, NoiseSampler, uv + float2(0, h)).r;     // y-h
+	float n_y_D = Texture2DSample(NoiseTexture, NoiseSampler, uv - float2(0, h)).r;     // y-h
+    
+	// 模拟z方向：使用稍微不同的采样模式或者额外的纹理
+	// 这里用对角线方向来近似z方向
+	float n_z_U = Texture2DSample(NoiseTexture, NoiseSampler, uv + float2(h, h) * 0.707).r;
+	float n_z_D = Texture2DSample(NoiseTexture, NoiseSampler, uv - float2(h, h) * 0.707).r;
+    
+	// 计算三个方向的偏导数
+	float dN_dx = (n_x_R - n_x_L) / (2.f * h);
+	float dN_dy = (n_y_U - n_y_D) / (2.f * h);
+	float dN_dz = (n_z_U - n_z_D) / (2.f * h);
+    
+	// 3D Curl公式: curl = (∂N/∂y - ∂N/∂z, ∂N/∂z - ∂N/∂x, ∂N/∂x - ∂N/∂y)
+	float3 curl = float3(
+		dN_dy - dN_dz,
+		dN_dz - dN_dx,
+		dN_dx - dN_dy
+	);
+    
+	return curl;
+}
+
 // 3D Curl（使用3D噪声纹理）
 // ============================================
 // 如果你有3D纹理资源
@@ -116,6 +156,38 @@ float3 CurlNoise3D_Volume(Texture3D NoiseTexture3D, SamplerState NoiseSampler,
 	float dN_dx = (n - n_x) / h;
 	float dN_dy = (n - n_y) / h;
 	float dN_dz = (n - n_z) / h;
+    
+	// 3D Curl公式
+	float3 curl = float3(
+		dN_dy - dN_dz,
+		dN_dz - dN_dx,
+		dN_dx - dN_dy
+	);
+    
+	return curl;
+}
+
+// 3D Curl（使用3D噪声纹理）
+// ============================================
+// 如果你有3D纹理资源
+float3 CurlNoise3D_Volume_Central(Texture3D NoiseTexture3D, SamplerState NoiseSampler, 
+						float3 Position, float SampleOffset)
+{
+	float3 pos = Position;
+	float h = SampleOffset;
+    
+	// 采样3个方向（后向差分）
+	float n_x_R = Texture3DSample(NoiseTexture3D, NoiseSampler, pos + float3(h, 0, 0)).r;
+	float n_x_L = Texture3DSample(NoiseTexture3D, NoiseSampler, pos - float3(h, 0, 0)).r;
+	float n_y_U = Texture3DSample(NoiseTexture3D, NoiseSampler, pos + float3(0, h, 0)).r;
+	float n_y_D = Texture3DSample(NoiseTexture3D, NoiseSampler, pos - float3(0, h, 0)).r;
+	float n_z_U = Texture3DSample(NoiseTexture3D, NoiseSampler, pos + float3(0, 0, h)).r;
+	float n_z_D = Texture3DSample(NoiseTexture3D, NoiseSampler, pos - float3(0, 0, h)).r;
+    
+	// 计算偏导数
+	float dN_dx = (n_x_R - n_x_L) / (2.f * h);
+	float dN_dy = (n_y_U - n_y_D) / (2.f * h);
+	float dN_dz = (n_z_U - n_z_D) / (2.f * h);
     
 	// 3D Curl公式
 	float3 curl = float3(
@@ -160,10 +232,40 @@ float3 CurlNoise3D_MultiChannel(Texture2D NoiseTexture, SamplerState NoiseSample
 	return curl;
 }
 
-float3 GetCamWP(FMaterialPixelParameters Parameters)
+// 3D Curl 使用RGB三通道分别计算三个独立的curl
+// ============================================
+// 如果你的噪声纹理RGB通道是三个独立的噪声
+float3 CurlNoise3D_MultiChannel_Central(Texture2D NoiseTexture, SamplerState NoiseSampler, 
+							  float2 UVs, float SampleOffset)
 {
-	float3 worldPos = Parameters.WorldPosition_CamRelative;
-	return worldPos;
+	float2 uv = UVs;
+	float h = SampleOffset;
+    
+	// 分别计算三个通道的curl（每个通道独立计算）
+	float3 curl;
+    
+	// R通道的2D curl -> XY分量
+	float r_right = Texture2DSample(NoiseTexture, NoiseSampler, uv + float2(h, 0)).r;
+	float r_left = Texture2DSample(NoiseTexture, NoiseSampler, uv - float2(h, 0)).r;
+	float r_top = Texture2DSample(NoiseTexture, NoiseSampler, uv + float2(0, h)).r;
+	float r_down = Texture2DSample(NoiseTexture, NoiseSampler, uv - float2(0, h)).r;
+	
+	float dR_dx = (r_right - r_left) / (2.f * h);
+	float dR_dy = (r_top - r_down) / (2.f * h);
+	curl.x = dR_dy;
+	curl.y = -dR_dx;
+    
+	// G通道的curl -> Z分量
+	float g_right = Texture2DSample(NoiseTexture, NoiseSampler, uv + float2(h, 0)).g;
+	float g_left = Texture2DSample(NoiseTexture, NoiseSampler, uv - float2(h, 0)).g;
+	float g_top = Texture2DSample(NoiseTexture, NoiseSampler, uv + float2(0, h)).g;
+	float g_down = Texture2DSample(NoiseTexture, NoiseSampler, uv - float2(0, h)).g;
+	
+	float dG_dx = (g_right - g_left) / h;
+	float dG_dy = (g_top - g_down) / h;
+	curl.z = dG_dx - dG_dy;
+    
+	return curl;
 }
 
 // 3D Curl 使用Curl2D Central分别计算三个独立的通道结果

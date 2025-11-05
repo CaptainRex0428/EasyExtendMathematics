@@ -77,7 +77,7 @@ int32 UMaterialExpressionCurlNoise3DVolume::Compile(class FMaterialCompiler* Com
 	if (SymmetrySample)
 	{
 		MaterialExpressionCustom->Code = TEXT(R"(
-		return CurlNoise3D_Volume(TextureVolume, TextureVolumeSampler, Position, SampleOffset);
+		return CurlNoise3D_Volume_Central(TextureVolume, TextureVolumeSampler, Position, SampleOffset);
 		)");
 	}
 	else

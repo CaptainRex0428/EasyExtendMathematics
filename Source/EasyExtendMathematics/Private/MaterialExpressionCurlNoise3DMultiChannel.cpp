@@ -79,7 +79,7 @@ int32 UMaterialExpressionCurlNoise3DMultiChannel::Compile(class FMaterialCompile
 	if (SymmetrySample)
 	{
 		MaterialExpressionCustom->Code = TEXT(R"(
-		return CurlNoise3D_MultiChannel(Texture, TextureSampler, Coordinate, SampleOffset);
+		return CurlNoise3D_MultiChannel_Central(Texture, TextureSampler, Coordinate, SampleOffset);
 		)");
 	}
 	else

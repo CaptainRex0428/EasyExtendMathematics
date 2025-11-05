@@ -50,6 +50,8 @@ void FEasyExtendMathematicsModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 
+	ResetAllShaderSourceDirectoryMappings();
+
 	if (PerlinNoiseTexture2D)
 	{
 		PerlinNoiseTexture2D->RemoveFromRoot();
@@ -62,7 +64,6 @@ void FEasyExtendMathematicsModule::ShutdownModule()
 		PerlinNoiseVolumeTexture = nullptr;
 	}
 	
-	ResetAllShaderSourceDirectoryMappings();
 }
 
 #undef LOCTEXT_NAMESPACE
