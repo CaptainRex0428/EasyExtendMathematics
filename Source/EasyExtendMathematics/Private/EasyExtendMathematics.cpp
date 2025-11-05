@@ -52,17 +52,24 @@ void FEasyExtendMathematicsModule::ShutdownModule()
 
 	ResetAllShaderSourceDirectoryMappings();
 
-	if (PerlinNoiseTexture2D)
-	{
-		PerlinNoiseTexture2D->RemoveFromRoot();
-		PerlinNoiseTexture2D = nullptr;
-	}
+	ResetAllShaderSourceDirectoryMappings();
 
-	if (PerlinNoiseVolumeTexture)
+	// 只在非关闭流程中清理（比如热重载）
+	if (!GIsRequestingExit && !GExitPurge)
 	{
-		PerlinNoiseVolumeTexture->RemoveFromRoot();
-		PerlinNoiseVolumeTexture = nullptr;
+		if (PerlinNoiseTexture2D && IsValid(PerlinNoiseTexture2D) && PerlinNoiseTexture2D->IsRooted())
+		{
+			PerlinNoiseTexture2D->RemoveFromRoot();
+		}
+		
+		if (PerlinNoiseVolumeTexture && IsValid(PerlinNoiseVolumeTexture) && PerlinNoiseVolumeTexture->IsRooted())
+		{
+			PerlinNoiseVolumeTexture->RemoveFromRoot();
+		}
 	}
+	
+	PerlinNoiseTexture2D = nullptr;
+	PerlinNoiseVolumeTexture = nullptr;
 	
 }
 
