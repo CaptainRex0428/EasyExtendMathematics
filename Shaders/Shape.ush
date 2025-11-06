@@ -1,0 +1,19 @@
+#pragma once
+
+#define PI 3.141592653589793238462643383279502884
+
+float2 RadialUVs(float2 UVs, float2 Center)
+{
+	float2 offset = UVs - Center;  // 相对中心的UV偏移
+	float2 normalizedOffset = normalize(offset);
+
+	// 计算与(0, 1)方向的夹角
+	float angle = atan2(normalizedOffset.x, normalizedOffset.y);
+
+	// 将角度归一化到[0, 1]范围
+	float angleNormalized = (angle + PI) / (2 * PI);
+
+	float offsetDistance = length(offset); 
+
+	return float2(angleNormalized, offsetDistance);
+}
