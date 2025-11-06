@@ -2,3 +2,50 @@
 
 #include "/Engine/Private/Common.ush"
 #include "Shape.ush"
+
+// sand dissolve simulation on uv planner
+float3 SandDissolvePlanner(Texture2D NoiseTexture, SamplerState NoiseSampler,
+	float2 resolution,
+	float2 UVs,
+	float time,
+	float2 speedMove,
+	float speedSparking,
+	float alpha)
+{
+	float2 computedSampleUV = (UVs + floor(time * speedMove * resolution)) / resolution;
+
+	float3 noiseColor = Texture2DSample(NoiseTexture, NoiseSampler, computedSampleUV);
+	float noiseSparking = saturate(frac(noiseColor + time * speedSparking));
+	float noiseWithAlpha = step(noiseSparking, alpha) * saturate(noiseSparking * alpha);
+	
+	return noiseWithAlpha;
+}
+
+// sand dissolve simulation on z direction
+float3 SandDissolveZ(Texture2D NoiseTexture, SamplerState NoiseSampler,
+	float2 resolution,
+	float2 UVs,
+	float2 centerPos,
+	float2 radialScale,
+	float time,
+	float2 speedMove,
+	float speedSparking,
+	float alpha
+	)
+{
+	float2 computedUVsInput = RadialUVs(UVs,centerPos) * radialScale;
+
+	float2 computedSampleUV_Main = (computedUVsInput + floor(time * speedMove * resolution)) / resolution;
+	float2 computedSampleUV_Mask = UVs / resolution;
+
+	float3 noiseColor_main = Texture2DSample(NoiseTexture, NoiseSampler, computedSampleUV_Main);
+	
+	float3 noiseColor_mask = Texture2DSample(NoiseTexture, NoiseSampler, computedSampleUV_Mask);
+	float3 noiseColor_mask_sparking = saturate(frac(noiseColor_mask + time * speedSparking));
+
+	float3 noiseSparkingResult = lerp(noiseColor_main, noiseColor_mask_sparking, 0.5f);
+
+	float noiseWithAlpha = step(noiseSparkingResult, alpha) * saturate(noiseSparkingResult * alpha);
+
+	return noiseWithAlpha;
+}
