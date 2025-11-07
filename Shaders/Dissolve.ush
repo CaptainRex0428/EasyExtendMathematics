@@ -49,8 +49,3 @@ float3 SandDissolveZDepth(
 	
 	return noiseWithAlpha;
 }
-
-float3 test()
-{
-	return float3(1,1,0);
-}
