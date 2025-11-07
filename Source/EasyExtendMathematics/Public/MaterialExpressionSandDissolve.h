@@ -15,8 +15,14 @@ class UMaterialExpressionSandDissolve : public UMaterialExpression
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(meta = (RequiredInput = "false", ToolTip = ""))
-	FExpressionInput Coordinate;
+	UPROPERTY(meta =(RequiredInput = "false", ToolTip = ""))
+	FExpressionInput PannerSpeed;
+	
+	UPROPERTY(meta =(RequiredInput = "false", ToolTip = ""))
+	FExpressionInput SparkingSpeed;
+
+	UPROPERTY(meta =(RequiredInput = "false", ToolTip = ""))
+	FExpressionInput Alpha;
 	
 	UPROPERTY(meta =(RequiredInput = "false", ToolTip = ""))
 	FExpressionInput CenterPos;
@@ -25,8 +31,20 @@ public:
 	FExpressionInput RadialScale;
 
 	/** Default scale value if not connected */	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionBasic, meta = (ShowAsInputPin = "Advanced"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionSandDissolve, meta = (ShowAsInputPin = "Advanced"))
 	bool bZDepthMove;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionSandDissolve, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "MoveSpeed"))
+	FVector2D DefaultPannerSpeed;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionSandDissolve, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "SparkingSpeed"))
+	float DefaultSparkingSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionSandDissolve, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "Alpha"))
+	float DefaultAlpha;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionSandDissolve, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "RadialScale"))
+	FVector2D DefaultRadialScale;
 
 	UPROPERTY()
 	TObjectPtr<UTexture2D> DefaultWhiteNoise;
