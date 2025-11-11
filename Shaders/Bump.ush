@@ -2,6 +2,8 @@
 
 #include "/Engine/Private/Common.ush"
 
+#include "Reflection.ush"
+
 float2 BumpOffsetUV(FMaterialPixelParameters Parameters, Texture2D MaskTex, SamplerState MaskTexSampler, float2 Coord, float HeightRatio)
 {
 	float CurrentTexHeight = MaskTex.SampleLevel(MaskTexSampler, Coord, 0.0f).w; //RMOH H = height
@@ -14,4 +16,13 @@ float2 BumpOffsetUV(FMaterialPixelParameters Parameters, Texture2D MaskTex, Samp
 	float2 uvOffset = viewXY * offsetAmount;
 
 	return Coord + uvOffset;
+}
+
+float2 BumpOffsetThickness(float3 NormalVector, float3 CameraVector, float Depth, float DepthOffset, float Resolution)
+{
+	float3 ReflectionVector = CustomReflection(NormalVector,CameraVector);
+
+	float DepthResult = Depth * DepthOffset / abs(ReflectionVector.b);
+
+	return DepthResult * ReflectionVector.rg / Resolution;
 }

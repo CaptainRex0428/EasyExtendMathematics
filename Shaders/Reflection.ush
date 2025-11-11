@@ -1,0 +1,7 @@
+#pragma once
+
+float3 CustomReflection(float3 NormalVector, float3 CameraVector)
+{
+	NormalVector = normalize(NormalVector);
+	return 2 * NormalVector * dot(NormalVector,CameraVector) - CameraVector;
+}
