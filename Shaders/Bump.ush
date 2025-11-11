@@ -1,0 +1,17 @@
+#pragma once
+
+#include "/Engine/Private/Common.ush"
+
+float2 BumpOffsetUV(FMaterialPixelParameters Parameters, Texture2D MaskTex, SamplerState MaskTexSampler, float2 Coord, float HeightRatio)
+{
+	float CurrentTexHeight = MaskTex.SampleLevel(MaskTexSampler, Coord, 0.0f).w; //RMOH H = height
+	float3 ViewDir = mul(Parameters.TangentToWorld, Parameters.CameraVector);
+
+	float2 viewXY = ViewDir.xy;
+	float offsetAmount = HeightRatio * CurrentTexHeight;
+	float referencePlane = 0.5f;
+	offsetAmount += -referencePlane * HeightRatio;
+	float2 uvOffset = viewXY * offsetAmount;
+
+	return Coord + uvOffset;
+}

@@ -1,4 +1,4 @@
-#include "MaterialExpressionCurlNoise3DVolume.h"
+#include "MaterialExpression/Curl/MaterialExpressionCurlNoise3DVolume.h"
 
 #include "MaterialCompiler.h"
 #include "Materials/MaterialExpressionCustom.h"

@@ -1,4 +1,4 @@
-#include "MaterialExpressionTangentCameraSpace.h"
+#include "MaterialExpression/Tangent/MaterialExpressionTangentCameraSpace.h"
 
 #include "MaterialCompiler.h"
 

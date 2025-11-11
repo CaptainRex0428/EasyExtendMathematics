@@ -1,13 +1,13 @@
-#include "MaterialExpressionCurlNoise3DMultiChannel.h"
+#include "MaterialExpression/Curl/MaterialExpressionCurlNoise2D.h"
 
 #include "MaterialCompiler.h"
 #include "Materials/MaterialExpressionCustom.h"
 #include "EasyExtendMathematics.h" 
 #include "LandscapeRender.h"
 
-#define LOCTEXT_NAMESPACE "UMaterialExpressionCurlNoise3DMultiChannel"
+#define LOCTEXT_NAMESPACE "UMaterialExpressionCurlNoise2D"
 
-UMaterialExpressionCurlNoise3DMultiChannel::UMaterialExpressionCurlNoise3DMultiChannel(const FObjectInitializer& ObjectInitializer)
+UMaterialExpressionCurlNoise2D::UMaterialExpressionCurlNoise2D(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer),
 	Scale(1.f,1.f),
 	Offset(0.f,0.f),
@@ -41,7 +41,7 @@ UMaterialExpressionCurlNoise3DMultiChannel::UMaterialExpressionCurlNoise3DMultiC
 
 #if WITH_EDITOR
 
-int32 UMaterialExpressionCurlNoise3DMultiChannel::Compile(class FMaterialCompiler* Compiler, int32 OutputIndex)
+int32 UMaterialExpressionCurlNoise2D::Compile(class FMaterialCompiler* Compiler, int32 OutputIndex)
 {
 	if (!TextureObject.GetTracedInput().Expression && !DefaultNoiseTexture)
 	{
@@ -72,20 +72,20 @@ int32 UMaterialExpressionCurlNoise3DMultiChannel::Compile(class FMaterialCompile
 	MaterialExpressionCustom->Inputs.Add({ TEXT("Coordinate") });
 	MaterialExpressionCustom->Inputs.Add({ TEXT("SampleOffset") });
 	
-	MaterialExpressionCustom->OutputType = ECustomMaterialOutputType::CMOT_Float3;
+	MaterialExpressionCustom->OutputType = ECustomMaterialOutputType::CMOT_Float2;
 	
 	MaterialExpressionCustom->IncludeFilePaths.Add("/EEShaders/Curl.ush");
 
 	if (SymmetrySample)
 	{
 		MaterialExpressionCustom->Code = TEXT(R"(
-		return CurlNoise3D_MultiChannel_Central(Texture, TextureSampler, Coordinate, SampleOffset);
+		return CurlNoise2D_Central(Texture, TextureSampler, Coordinate, SampleOffset);
 		)");
 	}
 	else
 	{
 		MaterialExpressionCustom->Code = TEXT(R"(
-		return CurlNoise3D_MultiChannel(Texture, TextureSampler, Coordinate, SampleOffset);
+		return CurlNoise2D(Texture, TextureSampler, Coordinate, SampleOffset);
 		)");
 	}
 	
@@ -95,18 +95,18 @@ int32 UMaterialExpressionCurlNoise3DMultiChannel::Compile(class FMaterialCompile
 	return Compiler->CustomExpression(MaterialExpressionCustom, OutputIndex, Inputs);
 }
 
-void UMaterialExpressionCurlNoise3DMultiChannel::GetCaption(TArray<FString>& OutCaptions) const
+void UMaterialExpressionCurlNoise2D::GetCaption(TArray<FString>& OutCaptions) const
 {
-	OutCaptions.Add(TEXT("CurlNoise3DMultiChannel"));
+	OutCaptions.Add(TEXT("CurlNoise2D"));
 }
 
-void UMaterialExpressionCurlNoise3DMultiChannel::GetExpressionToolTip(TArray<FString>& OutToolTip)
+void UMaterialExpressionCurlNoise2D::GetExpressionToolTip(TArray<FString>& OutToolTip)
 {
-	OutToolTip.Add(TEXT("Output is a 3D vector field distorted by curl noise."));
+	OutToolTip.Add(TEXT("Output is a 2D vector field distorted by curl noise."));
 	OutToolTip.Add(TEXT("Uses texture sampling to compute the curl of a noise field."));
 }
 
-FExpressionInput* UMaterialExpressionCurlNoise3DMultiChannel::GetInput(int32 InputIndex)
+FExpressionInput* UMaterialExpressionCurlNoise2D::GetInput(int32 InputIndex)
 {
 	switch (InputIndex)
 	{
@@ -118,7 +118,7 @@ FExpressionInput* UMaterialExpressionCurlNoise3DMultiChannel::GetInput(int32 Inp
 	
 }
 
-FName UMaterialExpressionCurlNoise3DMultiChannel::GetInputName(int32 InputIndex) const
+FName UMaterialExpressionCurlNoise2D::GetInputName(int32 InputIndex) const
 {
 	switch (InputIndex)
 	{
@@ -129,7 +129,7 @@ FName UMaterialExpressionCurlNoise3DMultiChannel::GetInputName(int32 InputIndex)
 	}
 }
 
-EMaterialValueType UMaterialExpressionCurlNoise3DMultiChannel::GetInputValueType(int32 InputIndex)
+EMaterialValueType UMaterialExpressionCurlNoise2D::GetInputValueType(int32 InputIndex)
 {
 	switch (InputIndex)
 	{

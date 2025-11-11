@@ -1,4 +1,4 @@
-#include "MaterialExpressionKajiyakay.h"
+#include "MaterialExpression/Model/MaterialExpressionKajiyakay.h"
 
 #include "MaterialCompiler.h"
 

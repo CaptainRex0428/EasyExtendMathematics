@@ -1,4 +1,4 @@
-#include "MaterialExpressionSandDissolve.h"
+#include "MaterialExpression/Sand/MaterialExpressionSandDissolve.h"
 
 #include "MaterialCompiler.h"
 #include "Materials/MaterialExpressionCustom.h"

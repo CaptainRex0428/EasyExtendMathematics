@@ -1,4 +1,4 @@
-#include "MaterialExpressionCurlNoise3DCombine.h"
+#include "MaterialExpression/Curl/MaterialExpressionCurlNoise3DCombine.h"
 
 #include "MaterialCompiler.h"
 #include "Materials/MaterialExpressionCustom.h"

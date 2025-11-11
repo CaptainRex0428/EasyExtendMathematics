@@ -1,0 +1,87 @@
+#pragma once
+
+#include "/Engine/Private/Common.ush"
+
+float2 ParallaxMappingFormTexture(FMaterialPixelParameters Parameters,Texture2D Tex,SamplerState TexSampler,float2 Coord,float MinStep,float MaxStep,float HeightRatio,float ReferencePlane)
+{
+    float4 HeightMapChannel = float4(1,0,0,0);
+
+    float3 VertexNormal = Parameters.TangentToWorld[2];
+
+    float StepRange = abs(dot(Parameters.CameraVector,VertexNormal));
+    StepRange = clamp(StepRange,0,1);
+    float MaxSteps = lerp(MaxStep,MinStep,StepRange);
+    float StepSize = 1/MaxSteps;
+    MaxSteps = floor(MaxStep);
+
+    float3 CameraVector = mul((MaterialFloat3x3)(Parameters.TangentToWorld), Parameters.CameraVector);
+    float2 HeightOffset = ((-1 * CameraVector.xy)/CameraVector.z) * HeightRatio;
+    float2 AddOffset = -1 * (1-ReferencePlane) * HeightOffset;
+
+    float2 UV = Coord + AddOffset;
+    float2 UVDist = StepSize * HeightOffset;
+
+    float2 InDDX = ddx(UV);
+    float2 InDDY = ddy(UV);
+
+    float rayheight=1;
+    float oldray=1;
+    float2 offset=0;
+    float oldtex=1;
+    float texatray;
+    float yintersect;
+    int i=0;
+
+    while (i < MaxSteps+2)
+    {
+        texatray = dot(HeightMapChannel, Tex.SampleGrad(TexSampler,UV + offset,InDDX, InDDY).xxx);
+
+        if (rayheight < texatray)
+        {
+            float xintersect = (oldray-oldtex) +(texatray-rayheight);
+            xintersect = (texatray-rayheight) /xintersect;
+            yintersect = (oldray*(xintersect)) +(rayheight * (1 - xintersect));
+            offset -= (xintersect * UVDist);
+            break;
+        }
+        oldray = rayheight;
+        rayheight -= StepSize;
+        offset += UVDist;
+        oldtex = texatray;
+
+        i++;
+    }
+
+    return offset + UV;
+}
+
+
+float2 ParallaxMappingHeightMaskUV(FMaterialPixelParameters Parameters, Texture2D MaskTex, SamplerState MaskTexSampler, float2 Coord, float HeightRatio, float MinStep, float MaxStep)
+{
+    float3 ViewDir = mul(Parameters.TangentToWorld, Parameters.CameraVector);
+
+    float Alpha = dot(float3(0.0f,0.0f,1.0f),ViewDir);
+
+    float LayerNum = floor(lerp(MaxStep, MinStep, clamp( abs( Alpha), 0.0f, 1.0f ) ) );
+    
+    float LayerHeight = 1.0f / LayerNum;
+
+    float2 DeltaUV = ViewDir.xy / ViewDir.z / LayerNum * HeightRatio;
+
+    float2 CurrentUV = Coord;
+    float CurrentLayerHeight = 0.0f;
+    float CurrentTexHeight = 1.0f - MaskTex.SampleLevel(MaskTexSampler, CurrentUV, 0.0f).w; //RMOH H = height
+
+    while(CurrentLayerHeight < CurrentTexHeight)
+    {
+        CurrentUV -= DeltaUV;//向下偏移一层
+        CurrentTexHeight = 1.0f - MaskTex.SampleLevel(MaskTexSampler, CurrentUV, 0.0f).w;//更新当前层采样贴图后得到的深度
+        CurrentLayerHeight += LayerHeight;//更新当前层的深度
+    }
+    float2 PreUV = CurrentUV + DeltaUV;
+    float Current = abs(CurrentTexHeight - CurrentLayerHeight);
+    float Pre = abs((1.0f - MaskTex.SampleLevel(MaskTexSampler, CurrentUV, 0.0f).w) - (CurrentLayerHeight - LayerHeight));
+    float Weight = Current / (Current + Pre);
+
+    return lerp(CurrentUV, PreUV, Weight);//CurrentUV;
+}

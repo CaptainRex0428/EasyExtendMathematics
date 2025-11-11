@@ -1,4 +1,4 @@
-#include "MaterialExpressionMapping.h"
+#include "MaterialExpression/MaterialExpressionMapping.h"
 
 #include "MaterialCompiler.h"
 #include "Materials/MaterialExpressionCustom.h"

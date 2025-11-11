@@ -1,4 +1,4 @@
-#include "MaterialExpressionMultiplyAdd.h"
+#include "MaterialExpression/MaterialExpressionMultiplyAdd.h"
 
 #include "Materials/MaterialIREmitter.h"
 #include "MaterialCompiler.h"

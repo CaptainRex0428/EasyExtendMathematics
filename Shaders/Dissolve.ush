@@ -1,7 +1,7 @@
 #pragma once
 
 #include "/Engine/Private/Common.ush"
-#include "Shape.ush"
+#include "CustomUVs.ush"
 
 // sand dissolve simulation on uv planner
 float3 SandDissolvePlanner(Texture2D NoiseTexture, SamplerState NoiseSampler,

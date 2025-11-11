@@ -1,4 +1,4 @@
-#include "MaterialExpressionTangentWS.h"
+#include "MaterialExpression/Tangent/MaterialExpressionTangentWS.h"
 
 #include "MaterialCompiler.h"
 
