@@ -54,7 +54,7 @@ int32 UMaterialExpressionRadialUVs::Compile(class FMaterialCompiler* Compiler, i
 	
 	MaterialExpressionCustom->OutputType = ECustomMaterialOutputType::CMOT_Float2;
 	
-	MaterialExpressionCustom->IncludeFilePaths.Add("/EEShaders/CustomUVs.ush");
+	MaterialExpressionCustom->IncludeFilePaths.Add("/EEShaders/UVs/CustomUVs.ush");
 
 	
 		MaterialExpressionCustom->Code = TEXT(R"(

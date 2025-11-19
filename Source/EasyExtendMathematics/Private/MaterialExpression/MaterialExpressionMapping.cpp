@@ -66,7 +66,7 @@ int32 UMaterialExpressionMapping::Compile(class FMaterialCompiler* Compiler, int
 	MaterialExpressionCustom->Inputs.Add({ TEXT("Rotation") });
 	MaterialExpressionCustom->Inputs.Add({ TEXT("Scale") });
 	MaterialExpressionCustom->OutputType = ECustomMaterialOutputType::CMOT_Float3;
-	MaterialExpressionCustom->IncludeFilePaths.Add("/EEShaders/Matrix.ush");
+	MaterialExpressionCustom->IncludeFilePaths.Add("/EEShaders/Mapping.ush");
 
 	MaterialExpressionCustom->Code = TEXT(R"(
 		float3 rotationRad = radians(Rotation);

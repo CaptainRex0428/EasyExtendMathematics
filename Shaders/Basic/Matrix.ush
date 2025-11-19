@@ -84,21 +84,3 @@ float4x4 MTXRotation(float x, float y, float z)
     );
 }
 
-// ============================================
-// 完整的Mapping变换矩阵（对应Blender的Mapping节点）
-// ============================================
-// 参数：
-//   location - 平移向量 (x, y, z)
-//   rotation - 旋转角度 (x, y, z) 弧度
-//   scale - 缩放向量 (x, y, z)
-// 返回：完整的变换矩阵
-// 变换顺序：Scale -> Rotation -> Translation
-float4x4 MTXMapping(float3 location, float3 rotation, float3 scale)
-{
-    float4x4 S = MTXScale(1/scale.x, 1/scale.y, 1/scale.z);
-    float4x4 R = MTXRotation(rotation.x, rotation.y, rotation.z);
-    float4x4 T = MTXTranslation(location.x, location.y, location.z);
-    
-    // 变换顺序：T * R * S
-    return mul(T, mul(R, S));
-}
