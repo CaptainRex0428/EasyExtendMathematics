@@ -3,13 +3,15 @@
 #include "MaterialCompiler.h"
 #include "Materials/MaterialExpressionCustom.h"
 #include "EasyExtendMathematics.h" 
-#include "LandscapeRender.h"
-#include "Components/DynamicEntryBoxBase.h"
 
 #define LOCTEXT_NAMESPACE "UMatetialExpressionBumpOffsetThickness"
 
 UMaterialExpressionBumpOffsetThickness::UMaterialExpressionBumpOffsetThickness(const FObjectInitializer& ObjectInitializer)
-	:Super(ObjectInitializer)
+	:Super(ObjectInitializer),
+	DefaultDepth(10.f),
+	DefaultDepthOffset(10.f),
+	DefaultResolution(1024.f),
+	DefaultPerlinNoise(nullptr)
 {
 	// Structure to hold one-time initialization
 	struct FConstructorStatics
@@ -59,12 +61,12 @@ int32 UMaterialExpressionBumpOffsetThickness::Compile(class FMaterialCompiler* C
 
 	int32 DepthOffsetInput = DepthOffset.GetTracedInput().Expression ? 
 		DepthOffset.Compile(Compiler) : 
-		Compiler->Mul(Compiler->Constant2(DefaultDepthOffset.X,DefaultDepthOffset.Y),
-			Compiler->TextureSample(Compiler->Texture(DefaultPerlinNoise,SAMPLERTYPE_Masks),Compiler->TextureCoordinate(0,0,0),SAMPLERTYPE_Masks));
+		Compiler->Mul(Compiler->Constant(DefaultDepthOffset),
+			Compiler->TextureSample(Compiler->Texture(DefaultPerlinNoise,SAMPLERTYPE_Masks),Compiler->TextureCoordinate(0,false,false),SAMPLERTYPE_Masks));
 
 	int32 ResolutionInput = Resolution.GetTracedInput().Expression ? 
 		Resolution.Compile(Compiler) : 
-		Compiler->Constant2(DefaultResolution.X,DefaultResolution.Y);
+		Compiler->Constant(DefaultResolution);
 	
 	UMaterialExpressionCustom* MaterialExpressionCustom = NewObject<UMaterialExpressionCustom>();
 

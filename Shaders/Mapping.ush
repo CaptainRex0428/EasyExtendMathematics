@@ -20,3 +20,9 @@ float4x4 MTXMapping(float3 location, float3 rotation, float3 scale)
 	// 变换顺序：T * R * S
 	return mul(T, mul(R, S));
 }
+
+
+float3 VectorRemap(float3 vec, float3 threshold, float3 offset)
+{
+	return (vec + offset) /threshold;
+}

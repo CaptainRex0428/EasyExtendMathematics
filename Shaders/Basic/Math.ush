@@ -1,0 +1,11 @@
+#pragma once
+
+int getSign(float num)
+{
+	return num / abs(num);
+}
+
+float clamp_signed(float num, float limit)
+{
+	return min(abs(num), limit) * getSign(num);
+}

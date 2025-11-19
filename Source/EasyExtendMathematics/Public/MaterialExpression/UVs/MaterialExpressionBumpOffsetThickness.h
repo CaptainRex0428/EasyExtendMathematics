@@ -33,13 +33,13 @@ public:
 
 	/** Default scale value if not connected */
 	UPROPERTY(EditAnywhere, Category = MaterialExpressionBasic, meta = (OverridingInputProperty = "Depth"))
-	uint8 DefaultDepth;
+	float DefaultDepth;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionBasic, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "DepthOffset"))
-	FVector2D DefaultDepthOffset;
+	float DefaultDepthOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaterialExpressionBasic, meta = (ShowAsInputPin = "Advanced", OverridingInputProperty = "Resolution"))
-	FVector2D DefaultResolution;
+	float DefaultResolution;
 
 	UPROPERTY()
 	TObjectPtr<UTexture2D> DefaultPerlinNoise;
