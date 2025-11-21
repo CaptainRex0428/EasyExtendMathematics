@@ -1,0 +1,20 @@
+#pragma once
+
+#include "../Basic/Math.ush"
+
+/* ellipse formula
+ * x2/a2 + y2/b2 = 1
+ */
+
+float EllipseArc()
+{
+	return 0;
+}
+
+float EllipseArcFixed(float ramp, float width)
+{
+	float value = sqrt((1- ramp * ramp) * width * width);
+	int sign = getSign(width);
+
+	return value * sign;
+}

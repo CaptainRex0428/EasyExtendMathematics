@@ -9,3 +9,16 @@ float clamp_signed(float num, float limit)
 {
 	return min(abs(num), limit) * getSign(num);
 }
+
+/* input ramp must be -1~1
+ * this function will offset the middle position (0 position) but keep the border -1~1
+*/
+float offsetRamp(float ramp, float offset)
+{
+	float unnormalized = ramp + offset;
+	float lowerScale = abs(offset - 1);
+	float upperScale = offset + 1;
+	float scale = lerp(lowerScale, upperScale, step(0,unnormalized));
+
+	return unnormalized / scale;
+}
