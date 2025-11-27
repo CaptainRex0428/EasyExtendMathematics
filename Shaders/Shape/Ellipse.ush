@@ -14,7 +14,6 @@ float EllipseArc()
 float EllipseArcFixed(float ramp, float width)
 {
 	float value = sqrt((1- ramp * ramp) * width * width);
-	int sign = getSign(width);
 
-	return value * sign;
+	return value * sign(width);
 }

@@ -1,0 +1,69 @@
+#pragma once
+
+#include "../Basic/Matrix.ush"
+#include "../Basic/Math.ush"
+
+float3 BendNormalOnX(float3 normal, float angleUpper, float angleLower, bool bVertical)
+{
+	float GuidValue = bVertical ? normal.y : normal.z;
+
+	float InterpolateValue = step(GuidValue,0);
+	float UpperBendIntensity = GuidValue * angleUpper;
+	float LowerBendIntensity = -GuidValue * angleLower;
+
+	float BendIntensity = lerp(UpperBendIntensity, LowerBendIntensity, InterpolateValue);
+	
+	float3 BendVector = mul(MTXRotationX(radians(BendIntensity)),normal);
+
+	return bVertical ? float3(normal.x, normal.y, BendVector.z) : float3(normal.x, BendVector.y, normal.z);
+}
+
+float3 BendNormalOnY(float3 normal, float angleUpper, float angleLower, bool bVertical)
+{
+	float GuidValue = bVertical ? normal.x : normal.z;
+
+	float InterpolateValue = step(GuidValue,0);
+	float UpperBendIntensity = GuidValue * angleUpper;
+	float LowerBendIntensity = -GuidValue * angleLower;
+
+	float BendIntensity = lerp(UpperBendIntensity, LowerBendIntensity, InterpolateValue);
+	
+	float3 BendVector = mul(MTXRotationY(radians(BendIntensity)),normal);
+
+	return bVertical ? float3(normal.x, normal.y, BendVector.z) : float3(BendVector.x, normal.y, normal.z);
+}
+
+float3 BendNormalOnZ(float3 normal, float angleUpper, float angleLower, bool bVertical)
+{
+	float GuidValue = bVertical ? normal.y : normal.x;
+
+	float InterpolateValue = step(GuidValue,0);
+	float UpperBendIntensity = GuidValue * angleUpper;
+	float LowerBendIntensity = -GuidValue * angleLower;
+
+	float BendIntensity = lerp(UpperBendIntensity, LowerBendIntensity, InterpolateValue);
+	
+	float3 BendVector = mul(MTXRotationZ(radians(BendIntensity)),normal);
+
+	return bVertical ? float3(BendVector.x, normal.y, normal.z) : float3(normal.x, BendVector.y, normal.z);
+}
+
+// consider ramp as -1 ~ 1 gradient
+float RampInterpolateValue(float ramp, float midThreshold, float scaleUpper, float scaleLower, float top, float upper, float mid, float lower, float bottom)
+{
+	float scaleThreshold = smoothstep(-midThreshold, midThreshold, ramp);
+	float scaleResult = lerp(max(scaleLower,0), max(scaleUpper,0), scaleThreshold);
+	
+	float upperThreshold = saturate(ramp);
+	float upperResult = lerp(upper, top, upperThreshold);
+	
+	float lowerThreshold = saturate(-ramp);
+	float lowerResult = lerp(lower, bottom, lowerThreshold);
+
+	float UpperBlendLower = lerp(upperResult,lowerResult,step(ramp ,0));
+
+	float midResult = smoothstep(midThreshold, 0 ,abs(ramp));
+	float result = lerp(UpperBlendLower,clamp_signed(mid,30),midResult);\
+
+	return result * scaleResult;
+}

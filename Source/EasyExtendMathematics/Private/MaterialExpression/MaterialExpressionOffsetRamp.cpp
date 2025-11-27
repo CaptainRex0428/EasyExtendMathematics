@@ -53,7 +53,7 @@ int32 UMaterialExpressionOffsetRamp::Compile(class FMaterialCompiler* Compiler, 
 	)");
 	
 	
-	MaterialExpressionCustom->OutputType = ECustomMaterialOutputType::CMOT_Float3;
+	MaterialExpressionCustom->OutputType = ECustomMaterialOutputType::CMOT_Float1;
 	
 	MaterialExpressionCustom->IncludeFilePaths.Add("/EEShaders/Basic/Math.ush");	
 	

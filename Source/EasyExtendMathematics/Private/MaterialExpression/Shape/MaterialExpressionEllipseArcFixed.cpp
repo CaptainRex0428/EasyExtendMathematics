@@ -52,7 +52,7 @@ int32 UMaterialExpressionEllipseArcFixed::Compile(class FMaterialCompiler* Compi
 	)");
 	
 	
-	MaterialExpressionCustom->OutputType = ECustomMaterialOutputType::CMOT_Float3;
+	MaterialExpressionCustom->OutputType = ECustomMaterialOutputType::CMOT_Float1;
 	
 	MaterialExpressionCustom->IncludeFilePaths.Add("/EEShaders/Shape/Ellipse.ush");	
 	

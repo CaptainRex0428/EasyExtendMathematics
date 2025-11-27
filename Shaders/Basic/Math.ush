@@ -1,13 +1,8 @@
 #pragma once
 
-int getSign(float num)
-{
-	return num / abs(num);
-}
-
 float clamp_signed(float num, float limit)
 {
-	return min(abs(num), limit) * getSign(num);
+	return min(abs(num), limit) * sign(num);
 }
 
 /* input ramp must be -1~1
